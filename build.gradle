@@ -88,8 +88,18 @@ allprojects {
     }
 
     checkstyle {
+        ignoreFailures = false
+        maxWarnings = 0
         toolVersion = "8.23"
         configFile = file("${rootProject.projectDir}/config/checkstyle/checkstyle.xml")
+    }
+
+    checkstyleMain {
+        source = 'src/main/java'
+    }
+
+    checkstyleTest {
+        source ='src/test/java'
     }
 }
 
