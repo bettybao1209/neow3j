@@ -120,6 +120,20 @@ public class Account {
         return balances;
     }
 
+    /**
+     * <p>Gets the balance (the amount and a set of UTXOs) for the given asset id.</p>
+     * <br>
+     * <p>Note that updating the balance information via a call to a RPC node is left to the library
+     * user. Call {@link Account#updateAssetBalances(Neow3j)} to have the most recent balance
+     * information</p>
+     *
+     * @param assetId The id/hash of the asset.
+     * @return the asset balance of this account.
+     */
+    public AssetBalance getAssetBalance(String assetId) {
+        return this.balances.getAssetBalance(assetId);
+    }
+
     public void updateAssetBalances(Neow3j neow3j) throws IOException, ErrorResponseException {
         NeoGetUnspents response = neow3j.getUnspents(getAddress()).send();
         response.throwOnError();
@@ -132,6 +146,21 @@ public class Account {
         balances.updateTokenBalances(response.getBalances());
     }
 
+    /**
+     * <p>Fetches a set of UTXOs from this account that fulfill the required asset amount.</p>
+     * <br>
+     * <p>Usually the UTXOs will not cover the amount exactly but cover a larger amount. Therefore
+     * it is important to calculate the necessary change before using the UTXOs in a transaction.</p>
+     *
+     * @param assetId  The asset needed.
+     * @param amount   The amount needed.
+     * @param strategy The strategy with which to choose the UTXOs available on this account.
+     * @return the list of UTXOs covering the required amount.
+     * @throws IllegalStateException      if this account does not have any balances, e.g. because they
+     *                                    have not been updated before.
+     * @throws InsufficientFundsException if this account does does not possess enough UTXOs to
+     *                                    fulfill the required amount.
+     */
     public List<Utxo> getUtxosForAssetAmount(String assetId, BigDecimal amount,
                                              InputCalculationStrategy strategy) {
 
